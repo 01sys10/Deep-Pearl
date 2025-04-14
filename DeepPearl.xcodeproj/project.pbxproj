@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B1C10C5A2DA94C5600421E2F /* SwimmingGoshaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C10C592DA94C5600421E2F /* SwimmingGoshaView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B1C10C3B2DA51CFE00421E2F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		B1C10C2D2DA51CFC00421E2F /* DeepPearl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeepPearl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1C10C3A2DA51CFE00421E2F /* DeepPearlTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeepPearlTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1C10C442DA51CFE00421E2F /* DeepPearlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeepPearlUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1C10C592DA94C5600421E2F /* SwimmingGoshaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwimmingGoshaView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		B1C10C242DA51CFC00421E2F = {
 			isa = PBXGroup;
 			children = (
+				B1C10C592DA94C5600421E2F /* SwimmingGoshaView.swift */,
 				B1C10C2F2DA51CFC00421E2F /* DeepPearl */,
 				B1C10C3D2DA51CFE00421E2F /* DeepPearlTests */,
 				B1C10C472DA51CFE00421E2F /* DeepPearlUITests */,
@@ -236,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1C10C5A2DA94C5600421E2F /* SwimmingGoshaView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
