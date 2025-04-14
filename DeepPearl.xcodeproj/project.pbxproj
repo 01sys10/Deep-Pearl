@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B1C10C5A2DA94C5600421E2F /* SwimmingGoshaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C10C592DA94C5600421E2F /* SwimmingGoshaView.swift */; };
+		B1C10CB22DACFB5000421E2F /* ThankNotesModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B1C10CB02DACFB5000421E2F /* ThankNotesModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,7 +31,7 @@
 		B1C10C2D2DA51CFC00421E2F /* DeepPearl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeepPearl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1C10C3A2DA51CFE00421E2F /* DeepPearlTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeepPearlTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1C10C442DA51CFE00421E2F /* DeepPearlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeepPearlUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B1C10C592DA94C5600421E2F /* SwimmingGoshaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwimmingGoshaView.swift; sourceTree = "<group>"; };
+		B1C10CB12DACFB5000421E2F /* ThankNotesModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ThankNotesModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +48,11 @@
 		B1C10C472DA51CFE00421E2F /* DeepPearlUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = DeepPearlUITests;
+			sourceTree = "<group>";
+		};
+		B1C10CB42DACFC1000421E2F /* ViewModel */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -80,11 +85,12 @@
 		B1C10C242DA51CFC00421E2F = {
 			isa = PBXGroup;
 			children = (
-				B1C10C592DA94C5600421E2F /* SwimmingGoshaView.swift */,
+				B1C10CB02DACFB5000421E2F /* ThankNotesModel.xcdatamodeld */,
 				B1C10C2F2DA51CFC00421E2F /* DeepPearl */,
 				B1C10C3D2DA51CFE00421E2F /* DeepPearlTests */,
 				B1C10C472DA51CFE00421E2F /* DeepPearlUITests */,
 				B1C10C2E2DA51CFC00421E2F /* Products */,
+				B1C10CB42DACFC1000421E2F /* ViewModel */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +121,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				B1C10C2F2DA51CFC00421E2F /* DeepPearl */,
+				B1C10CB42DACFC1000421E2F /* ViewModel */,
 			);
 			name = DeepPearl;
 			packageProductDependencies = (
@@ -242,7 +249,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1C10C5A2DA94C5600421E2F /* SwimmingGoshaView.swift in Sources */,
+				B1C10CB22DACFB5000421E2F /* ThankNotesModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,7 +335,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -385,7 +392,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -402,6 +409,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5VA2L3436C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -429,6 +437,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5VA2L3436C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -557,6 +566,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		B1C10CB02DACFB5000421E2F /* ThankNotesModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				B1C10CB12DACFB5000421E2F /* ThankNotesModel.xcdatamodel */,
+			);
+			currentVersion = B1C10CB12DACFB5000421E2F /* ThankNotesModel.xcdatamodel */;
+			path = ThankNotesModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = B1C10C252DA51CFC00421E2F /* Project object */;
 }
