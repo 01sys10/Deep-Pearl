@@ -7,9 +7,12 @@
 
 import SwiftUI
 
+
+
 struct MainView: View {
     @State private var isShowingAddModal = false
-    @State private var gratitudeText = ""
+    @State private var isShowingHistory = false
+    @State private var thankNote = ""
     
     var body: some View {
         ZStack(alignment: .topTrailing){
@@ -47,17 +50,20 @@ struct MainView: View {
                 Spacer()
                 HStack{
                     Spacer()
-                    AnimatedGoblinSharkView()
+                    SwimmingGoshaView()
                         .frame(width: 190, height: 190)
                     Spacer()
                 }
                 Spacer()
-            }
+            } // Swimming Gosha
+            
             
             VStack{
                 Button{
-                    HistoryView()
-                }label:{
+                    withAnimation{
+                        isShowingHistory = true
+                    }
+                } label:{
                     Image(systemName: "archivebox.fill")
                     //.frame(width: 40, height: 47)
                         .font(.system(size: 30, weight: .bold))
@@ -72,6 +78,14 @@ struct MainView: View {
                 .padding(.trailing, 30)
                 .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 4)
                 Spacer()
+            }
+            
+            if isShowingHistory {
+                HistoryView(isShowing: $isShowingHistory)
+                    .transition(.move(edge: .trailing))
+                    .zIndex(1)
+                    .environmentObject(mockViewModel)
+
             }
             
             VStack{
@@ -93,11 +107,13 @@ struct MainView: View {
                     .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 4)
                     Spacer()
                 }
-            }
+            } // add note modal button
         }
         .sheet(isPresented: $isShowingAddModal) {
-            AddModalView(isPresented: $isShowingAddModal, text: $gratitudeText)
+            AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
         }
+        .animation(.easeInOut, value: isShowingHistory)
+
     }
 }
 

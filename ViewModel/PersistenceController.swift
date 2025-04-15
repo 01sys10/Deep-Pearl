@@ -5,6 +5,8 @@
 //  Created by soyeonsoo on 4/14/25.
 //
 
+// TODO: 
+
 import CoreData
 
 struct PersistenceController {
@@ -13,7 +15,7 @@ struct PersistenceController {
     let container: NSPersistentContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "ThankNotesModel") // 👈 반드시 .xcdatamodeld 파일 이름과 같아야 해요!
+        container = NSPersistentContainer(name: "ThankNotesModel")
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
         }

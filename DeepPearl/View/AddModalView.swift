@@ -1,5 +1,5 @@
 //
-//  GratitudeModalView.swift
+//  AddModalView.swift
 //  DeepPearl
 //
 //  Created by soyeonsoo on 4/14/25.
