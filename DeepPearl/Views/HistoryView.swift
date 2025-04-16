@@ -6,27 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // TODO: calendar carousell
 
 struct HistoryView: View {
-    @EnvironmentObject var viewModel: ThankNotesViewModel
+    @Query var notes: [ThankNote]
     @State private var selectedDate: Date = Date()
-    @Environment(\.dismiss) var dismiss
     @Binding var isShowing: Bool
     
     // 날짜만 추출    
     private var uniqueDates: [Date] {
         // let dateSet = Set(viewModel.notes.map { Calendar.current.startOfDay(for: $0.timestamp) })
         // timestamp는 옵셔널, startOfDay는 옵셔널을 못 받는다. 꼭 Date여야 한다.
-        let dateSet = Set(viewModel.notes.map {
+        let dateSet = Set(notes.map {
             Calendar.current.startOfDay(for: $0.timestamp ?? Date())
         })
         return Array(dateSet).sorted(by: >)}
         
-
-    
-    
     var body: some View {
         NavigationStack{
             VStack(spacing: 20) {
@@ -47,6 +44,7 @@ struct HistoryView: View {
                                     .onTapGesture {
                                         selectedDate = date
                                     }
+                                    .frame(maxWidth: .infinity, alignment: .center)
                                 
                                 Text(format(date))
                                     .font(.caption)
@@ -56,26 +54,31 @@ struct HistoryView: View {
                     .padding(.horizontal)
                 }
                 
-                Divider()
-                    .padding(.horizontal)
+//                Divider()
+//                    .padding(.horizontal)
                 
                 VStack(alignment: .leading, spacing: 12) {
-//                        ForEach(filteredNotes(), id: \.self) { note in
-//                            VStack(alignment: .leading) {
-//                                Text(note.text ?? "")
-//                                    .padding()
-//                                    .background(.ultraThinMaterial)
-//                                    .cornerRadius(12)
-//        
-//                                Text(formatFull(note.timestamp ?? Date()))
-//                                    .font(.caption)
-//                                    .foregroundStyle(.secondary)
-//                            }
-//                        }
+                    ForEach(filteredNotes(), id: \.self) { note in
+                        noteCard(for: note)
+                    }
                 }
                 .padding(.horizontal)
                 
+                
+                
+                if let selectedNote = notes.first(where: {
+                    Calendar.current.isDate($0.timestamp, inSameDayAs: selectedDate)
+                }) {
+                    Text(selectedNote.note)
+                        .padding()
+                        .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                }
+                
                 Spacer()
+
             }
             .padding(.top)
             .background(.thinMaterial)
@@ -116,27 +119,42 @@ struct HistoryView: View {
         return formatter.string(from: date)
     }
     
-    /// "for filtering"
-    /// - Returns: ViewModel 안에 있는 모든 note 중 selectedDate랑 같은 날에 작성된 것만 골라서 리턴
+    /// "for filtering notes"
+    /// - Returns: ViewModel 안에 있는 모든 note 중 selectedDate와 같은 날에 작성된 것만 골라서 리턴
     func filteredNotes() -> [ThankNote] {
-        viewModel.notes.filter {
+        notes.filter {
             Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: selectedDate)
         }
     }
+    
+    @ViewBuilder
+    func noteCard(for note: ThankNote) -> some View {
+        VStack(alignment: .leading) {
+            let text = note.note ?? ""
+            let date = note.timestamp ?? Date()
+
+//            Text(text)
+//                .padding()
+//                .background(.ultraThinMaterial)
+//                .cornerRadius(12)
+
+            Text(formatFull(date))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
 }
 
-let mockViewModel: ThankNotesViewModel = {
-    let vm = ThankNotesViewModel()
-    let mockNote = ThankNote(context: PersistenceController.shared.container.viewContext)
-    mockNote.note = "~ Thank Note for Preview ~"
-    mockNote.timestamp = Date()
-    vm.notes = [mockNote]
-    return vm
-}()
+// TODO: 진주 색상 처리
+/*
+ let isOlderThanWeek = Calendar.current.dateComponents([.day], from: note.timestamp, to: Date()).day ?? 0 >= 7
+
+ Image(isOlderThanWeek ? "pearl_yellow" : "pearl_pink")
+ */
 
 
-//#Preview {
-//    HistoryView()
-//        //.environmentObject(ThankNotesViewModel())
-//        .environmentObject(mockViewModel)
-//}
+#Preview {
+    HistoryView(isShowing: .constant(true))
+        .modelContainer(for: ThankNote.self, inMemory: true)
+}

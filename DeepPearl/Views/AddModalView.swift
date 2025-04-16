@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AddModalView: View {
+    @Query var notes: [ThankNote]
+
     @Binding var isPresented: Bool
     @Binding var text: String
     @State private var isShowingDiscardAlert = false
-//    @EnvironmentObject var viewModel: ThankNotesViewModel
-    @StateObject private var viewModel = ThankNotesViewModel()
+    
+    @Environment(\.modelContext) private var modelContext
 
     
     var body: some View {
@@ -53,14 +56,22 @@ struct AddModalView: View {
                         .fontWeight(.bold)
                         //.foregroundColor(.white)
                 }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        // ThankNotesViewModel.addNote(text: text) // instance method. can't use like it's type method.
-                        // static으로 선언되어 있지 않은데 인스턴스 없이 써서 오류. (인스턴스 메서드를 타입에서 호출해서 오류)
-                        viewModel.addNote(text: text)
-                        
-                        text = ""
-                        isPresented = false
+                        let alreadyExists = notes.contains {
+                            Calendar.current.isDate($0.timestamp, inSameDayAs: .now)
+                        }
+
+                        if alreadyExists {
+                            // 하루 1개 제한 알림 띄우기
+                            // TODO: 사용자 알림 UI로 변경
+                            print("이미 작성한 기록이 있어요!")
+                        } else {
+                            DataManager.saveNote(text: text, in: modelContext)
+                            text = ""
+                            isPresented = false
+                        }
                     }
                     .disabled(text.isEmpty)
                     .foregroundColor(text.isEmpty ? .gray : .blue)

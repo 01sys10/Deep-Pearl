@@ -10,9 +10,13 @@ import SwiftUI
 
 
 struct MainView: View {
+    @Environment(\.modelContext) var modelContext
+    
     @State private var isShowingAddModal = false
     @State private var isShowingHistory = false
     @State private var thankNote = ""
+    
+    
     
     var body: some View {
         ZStack(alignment: .topTrailing){
@@ -22,7 +26,7 @@ struct MainView: View {
                 .scaledToFill()
                 .edgesIgnoringSafeArea(.all)
             
-            // TODO: add coral images
+            // TODO: Add coral images
             
             // VStack {
             //     Spacer()
@@ -58,6 +62,7 @@ struct MainView: View {
             } // Swimming Gosha
             
             
+            
             VStack{
                 Button{
                     withAnimation{
@@ -84,7 +89,7 @@ struct MainView: View {
                 HistoryView(isShowing: $isShowingHistory)
                     .transition(.move(edge: .trailing))
                     .zIndex(1)
-                    .environmentObject(mockViewModel)
+                    //.environmentObject(mockViewModel)
 
             }
             
@@ -108,6 +113,10 @@ struct MainView: View {
                     Spacer()
                 }
             } // add note modal button
+        }
+        
+        .onAppear {
+            DataManager.deleteAllNotes(in: modelContext)
         }
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)

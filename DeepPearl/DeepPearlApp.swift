@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import SwiftData
+
 
 @main
 struct DeepPearlApp: App {
@@ -13,5 +15,6 @@ struct DeepPearlApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: ThankNote.self)
     }
 }
