@@ -115,9 +115,9 @@ struct MainView: View {
             } // add note modal button
         }
         
-        .onAppear {
-            DataManager.deleteAllNotes(in: modelContext)
-        }
+//        .onAppear {
+//            DataManager.deleteAllNotes(in: modelContext)
+//        }
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
         }
