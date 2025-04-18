@@ -11,7 +11,8 @@ import SwiftData
 // TODO: calendar carousell
 
 struct HistoryView: View {
-    @Query var notes: [ThankNote] // fetch
+    @Query var notes: [ThankNote]
+    // ModelContext에 접근하지 않고도 데이터를 모두 동일하게 받아올 수 있다.
     
     @State private var selectedDate: Date = Date()
     @State private var selectedNote: ThankNote? = nil
@@ -219,8 +220,8 @@ struct HistoryView: View {
                                 
                                 Button(role: .destructive) {
                                     context.delete(selectedNote)
-                                    try? context.save()
-                                    self.selectedNote = nil
+                                    try? context.save() //
+                                    self.selectedNote = nil //
                                     self.editingText = ""
                                 } label: {
                                     Text("삭제")
@@ -286,7 +287,7 @@ struct HistoryView: View {
     /// - Returns: ViewModel 안에 있는 모든 note 중 selectedDate와 같은 날에 작성된 것만 골라서 리턴
     func filteredNotes(for date: Date? = nil) -> [ThankNote] {
         let targetDate = date ?? selectedDate
-        var result: [ThankNote] = []
+        var result: [ThankNote] = [] // fetch(read) 함수 따로 없이 이렇게 가져오나?
 
         for note in notes {
             if Calendar.current.isDate(note.timestamp, inSameDayAs: targetDate) {

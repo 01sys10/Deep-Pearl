@@ -12,7 +12,7 @@ struct LightRayView: View {
     
     var body: some View {
         ZStack{
-            Color.black.opacity(0.2)
+            Color.black.opacity(0.05)
                 .edgesIgnoringSafeArea(.all)
             Image("light_rays")
                 .resizable()

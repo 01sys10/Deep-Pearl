@@ -9,7 +9,7 @@ import SwiftData
 
 struct DataManager {
     
-    static func saveNote(text: String, in context: ModelContext) {
+    static func saveNote(text: String, in context: ModelContext) { // create & save
         let newNote = ThankNote(note: text, timestamp: .now)
         context.insert(newNote)
         try? context.save()

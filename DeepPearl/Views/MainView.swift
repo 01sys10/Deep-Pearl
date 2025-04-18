@@ -23,32 +23,32 @@ struct MainView: View {
             
             Image("default_back")
                 .resizable()
-                .scaledToFill()
-                .edgesIgnoringSafeArea(.all)
-            
-            // TODO: Add coral images
-            
-            // VStack {
-            //     Spacer()
-            //     HStack(spacing: -210) {
-            //         Image("coral_yellow")
-            //             .interpolation(.none)
-            //             .resizable()
-            //             .scaledToFit()
-            //             .frame(width: 410, height: 180)
-            //             .padding(.leading, 20)
-            
-            //         Image("coral_red")
-            //             .interpolation(.none)
-            //             .resizable()
-            //             .scaledToFit()
-            //             .frame(width: 410, height: 180)
-            //             .padding(.trailing, 20)
-            //     }
-            //     .padding(.bottom, 20)
-            // }
+                //.scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+                //.edgesIgnoringSafeArea(.all)
             
             LightRayView()
+            
+            // TODO: Add coral images
+
+            VStack {
+                    Spacer()
+                    HStack(spacing: 0) {
+                        Image("coral_yellow")
+                            .resizable()
+                            .interpolation(.none)
+                            //.scaledToFit()
+                            .frame(width: 200, height: 180)
+
+                        Image("coral_red")
+                            .resizable()
+                            .interpolation(.none)
+                            //.scaledToFit()
+                            .frame(width: 200, height: 180)
+                    }
+            }
+                .allowsHitTesting(false) // 산호초는 인터랙션 없음
             
             VStack{
                 Spacer()
