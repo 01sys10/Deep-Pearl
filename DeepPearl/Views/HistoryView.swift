@@ -8,7 +8,8 @@
 import SwiftUI
 import SwiftData
 
-// TODO: calendar carousell
+// TODO: 좌우 월 이동
+
 
 struct HistoryView: View {
     @Query var notes: [ThankNote]
@@ -68,6 +69,7 @@ struct HistoryView: View {
                         HStack(spacing: 24) {
                             ForEach(uniqueDates, id: \.self) { date in
                                 VStack { // pearl + day
+                                    // Image(note.isFloatingUp ? "pearl_yellow" : "pearl_pink")
                                     Image("pearl")
                                         .resizable()
                                     // 선택된 날짜의 진주는 강조
@@ -109,7 +111,7 @@ struct HistoryView: View {
                         .cornerRadius(12)
                     }
                     
-                     .padding(50)
+                    // .padding(50)
                     .frame(maxWidth: .infinity, alignment: .center)
                     
                     //                     날짜별 감사 기록 카드
@@ -339,9 +341,6 @@ struct HistoryView: View {
  Image(isOlderThanWeek ? "pearl_yellow" : "pearl_pink")
  */
 
-// TODO: UD
-
-// TODO: 좌우 월 이동
 
 #Preview {
     HistoryView(isShowing: .constant(true))
