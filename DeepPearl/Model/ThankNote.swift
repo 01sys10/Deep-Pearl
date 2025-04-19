@@ -13,6 +13,8 @@ import SwiftData
 class ThankNote {
     var note: String
     var timestamp: Date
+    var isRecalled: Bool = false // 상기 여부
+    var pearlSize: CGFloat = CGFloat.random(in: 40...70)
     
     init(note: String, timestamp: Date = .now) {
         self.note = note

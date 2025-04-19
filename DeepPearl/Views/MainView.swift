@@ -16,6 +16,8 @@ struct MainView: View {
     @State private var isShowingHistory = false
     @State private var thankNote = ""
     
+    @State private var animate = false
+    
     
     
     var body: some View {
@@ -28,10 +30,10 @@ struct MainView: View {
                 .ignoresSafeArea()
                 //.edgesIgnoringSafeArea(.all)
             
+            
             LightRayView()
             
-            // TODO: Add coral images
-
+            // MARK: coral
             VStack {
                     Spacer()
                     HStack(spacing: 0) {
@@ -47,8 +49,18 @@ struct MainView: View {
                             //.scaledToFit()
                             .frame(width: 200, height: 180)
                     }
+                    .offset(x: animate ? -10 : 10)
+                    .animation(
+                        Animation.easeInOut(duration: 3).repeatForever(autoreverses: true),
+                        value: animate
+                    )
+                    .onAppear {
+                        animate = true
+                    }
+                    
             }
-                .allowsHitTesting(false) // 산호초는 인터랙션 없음
+
+                
             
             VStack{
                 Spacer()
@@ -118,6 +130,7 @@ struct MainView: View {
 //        .onAppear {
 //            DataManager.deleteAllNotes(in: modelContext)
 //        }
+        
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
         }

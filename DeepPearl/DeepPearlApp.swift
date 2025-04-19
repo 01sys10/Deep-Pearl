@@ -27,5 +27,6 @@ struct DeepPearlApp: App {
         // Model container
         // 앱의 스키마 및 모델 저장소 configuration을 관리하는 객체.
         // 패키징한 내용(스키마, configuration). ModelContext와 영구 저장소 사이에 위치, 중개자 역할
+        // 모델 타입에 영구적으로 유지되는 백엔드 제공
     }
 }
