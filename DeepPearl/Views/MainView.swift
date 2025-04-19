@@ -23,6 +23,10 @@ struct MainView: View {
     // 유저가 탭한 진주에 해당하는 감사 기록을 담는 변수
     // 기본값 nil, 유저가 진주를 탭하면 값이 채워짐
     
+    @AppStorage("fishLevel") private var fishLevel: Int = 1
+    
+    let maxFishLevel = 3
+    
     
     var body: some View {
         ZStack(alignment: .topTrailing){
@@ -65,6 +69,7 @@ struct MainView: View {
                     dismissButton: .default(Text("Thanks!")) {
                         if let selectedNote = selectedNote {
                             selectedNote.isRecalled = true
+                            fishLevel = min(fishLevel + 1, maxFishLevel) // 감사 기록 상기하면 물고기 레벨업
                             try? modelContext.save()
                         }
                     }
@@ -100,20 +105,19 @@ struct MainView: View {
             }
             
             
-            
+            // MARK: Swimming fish
             VStack{
                 Spacer()
                 HStack{
                     Spacer()
-                    SwimmingGoshaView()
-                        .frame(width: 190, height: 190)
+                    SwimmingGoshaView(fishLevel: fishLevel)
                     Spacer()
                 }
                 Spacer()
             } // Swimming Gosha
             
             
-            
+            // MARK: Button(MainView -> HistoryView)
             VStack{
                 Button{
                     withAnimation{
@@ -141,9 +145,10 @@ struct MainView: View {
                     .transition(.move(edge: .trailing))
                     .zIndex(1)
                 //.environmentObject(mockViewModel)
-                
             }
             
+            
+            // MARK: Button(MainView -> AddModalView)
             VStack{
                 Spacer()
                 HStack{
@@ -166,9 +171,14 @@ struct MainView: View {
             } // add note modal button
         }
         
-        //        .onAppear {
-        //            DataManager.deleteAllNotes(in: modelContext)
-        //        }
+        // MARK: for text
+        
+//        .onAppear {
+//            DataManager.deleteAllNotes(in: modelContext)
+//        }
+        .onAppear {
+            fishLevel = 1
+        }
         
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
@@ -176,6 +186,8 @@ struct MainView: View {
         .animation(.easeInOut, value: isShowingHistory)
         
     }
+    
+    
 }
 
 #Preview {

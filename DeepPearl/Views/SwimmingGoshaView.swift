@@ -8,21 +8,24 @@
 import SwiftUI
 
 struct SwimmingGoshaView: View {
+    var fishLevel: Int
     @State private var frameIndex = 0
-    private let frames = ["gosha_swimming_1", "gosha_swimming_2"]
+    // private let frames = ["gosha_swimming_1", "gosha_swimming_2"]
     private let timer = Timer.publish(every: 0.6, on: .main, in: .common).autoconnect()
 
     var body: some View {
+        let baseName = "gosha_lv\(fishLevel)_"
+        let frames = [baseName + "1", baseName + "2"]
         Image(frames[frameIndex])
             .interpolation(.none) // 픽셀아트 선명하게
             .resizable()
-            .frame(width: 240, height: 240)
+            .frame(width: 180, height: 180)
             .onReceive(timer) { _ in
-                    frameIndex = (frameIndex + 1) % frames.count
+                frameIndex = (frameIndex + 1) % frames.count
             }
     }
 }
 
 #Preview {
-    SwimmingGoshaView()
+    SwimmingGoshaView(fishLevel: 1)
 }

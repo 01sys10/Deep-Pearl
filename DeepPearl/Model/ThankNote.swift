@@ -23,7 +23,7 @@ class ThankNote {
 }
 
 
-// Entity named ThankNote
+// Schema named ThankNote
 // two attributes
 // : note(String type), timestamp(Date type)
 
