@@ -7,6 +7,7 @@
 
 // 뷰모델로 바꿀까 흠흠 ObservableObject로
 import SwiftData
+import Foundation
 
 struct DataManager {
     
@@ -23,6 +24,25 @@ struct DataManager {
     
     static func updateNote(_ note: ThankNote, newText: String, in context: ModelContext) {
         note.note = newText
+        try? context.save()
+    }
+    
+    static func replaceNote(text: String, in context: ModelContext){
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
+        
+        let fetch = FetchDescriptor<ThankNote>(
+            predicate: #Predicate {
+                $0.timestamp >= todayStart && $0.timestamp < todayEnd
+            }
+        )
+        if let existingNote = try? context.fetch(fetch).first {
+            context.delete(existingNote)
+        }
+
+        let newNote = ThankNote(note: text, timestamp: .now)
+        context.insert(newNote)
+
         try? context.save()
     }
     

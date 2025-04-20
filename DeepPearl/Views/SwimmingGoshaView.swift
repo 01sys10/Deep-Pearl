@@ -19,7 +19,8 @@ struct SwimmingGoshaView: View {
         Image(frames[frameIndex])
             .interpolation(.none) // 픽셀아트 선명하게
             .resizable()
-            .frame(width: 180, height: 180)
+            .frame(width: fishLevel > 2 ? 220 : 180,
+                   height: fishLevel > 2 ? 220 : 180)
             .onReceive(timer) { _ in
                 frameIndex = (frameIndex + 1) % frames.count
             }

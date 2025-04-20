@@ -17,15 +17,19 @@ struct MainView: View {
     @State private var isShowingHistory = false
     @State private var showRecollection = false
     @State private var thankNote = ""
+    @State private var currentTime = Date()
+    
     
     @State private var animate = false
     @State private var selectedNote: ThankNote? = nil
     // 유저가 탭한 진주에 해당하는 감사 기록을 담는 변수
     // 기본값 nil, 유저가 진주를 탭하면 값이 채워짐
+    @State private var pearlYPositions: [PersistentIdentifier: CGFloat] = [:]
+    @State private var pearlXPositions: [PersistentIdentifier: CGFloat] = [:]
     
     @AppStorage("fishLevel") private var fishLevel: Int = 1
     
-    let maxFishLevel = 3
+    private let maxFishLevel = 3
     
     
     var body: some View {
@@ -43,22 +47,26 @@ struct MainView: View {
             
             // MARK: pearl
             ForEach(notes.filter { !$0.isRecalled }) { note in
+                let id = note.persistentModelID
                 // let isFloatingUp = note.timestamp < Calendar.current.date(byAdding: .day, value: -7, to: Date())!
                 // 테스트용(10초 뒤 상승)
-                let isFloatingUp = note.timestamp < Date().addingTimeInterval(-10)
-                
-                Image(isFloatingUp ? "pearl_yellow" : "pearl_pink")
-                    .resizable()
-                    .interpolation(.none)
-                    .frame(width: note.pearlSize, height: note.pearlSize)
-                    .position(x: CGFloat.random(in: 30...350),
-                              y: isFloatingUp ? 120 : 700)
-                    .onTapGesture {
-                        if isFloatingUp {
-                            selectedNote = note
-                            showRecollection = true
-                        }
+                let isFloatingUp = currentTime.timeIntervalSince(note.timestamp) >= 10
+                let x = pearlXPositions[id] ?? CGFloat.random(in: 30...350)
+
+                FloatingPearlView(
+                    note: note,
+                    x: x,
+                    isFloatingUp: isFloatingUp,
+                    pearlSize: note.pearlSize
+                ) {
+                    selectedNote = note
+                    showRecollection = true
+                }
+                .onAppear {
+                    if pearlXPositions[id] == nil {
+                        pearlXPositions[id] = x
                     }
+                }
             }
             
             // alert로 상기 내용 보여주기
@@ -170,15 +178,18 @@ struct MainView: View {
                 }
             } // add note modal button
         }
-        
-        // MARK: for text
-        
-//        .onAppear {
-//            DataManager.deleteAllNotes(in: modelContext)
-//        }
+        .onTapGesture {
+            currentTime = Date()
+        }
         .onAppear {
             fishLevel = 1
         }
+        
+        // MARK: for text
+        
+        //        .onAppear {
+        //            DataManager.deleteAllNotes(in: modelContext)
+        //        }
         
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
@@ -188,8 +199,35 @@ struct MainView: View {
     }
     
     
+    struct FloatingPearlView: View {
+        let note: ThankNote
+        let x: CGFloat
+        let isFloatingUp: Bool
+        let pearlSize: CGFloat
+        let onTap: () -> Void
+        
+        @State private var y: CGFloat = 700
+        
+        var body: some View {
+            Image(isFloatingUp ? "pearl_yellow" : "pearl_pink")
+                .resizable()
+                .interpolation(.none)
+                .frame(width: pearlSize, height: pearlSize)
+                .position(x: x, y: y)
+                .onTapGesture {
+                    if isFloatingUp {
+                        onTap()
+                    }
+                }
+                .onChange(of: isFloatingUp) {
+                    withAnimation(.easeInOut(duration: 2)) {
+                        y = isFloatingUp ? 120 : 700
+                    }
+                }
+        }
+    }
 }
-
-#Preview {
-    MainView()
-}
+    
+    #Preview {
+        MainView()
+    }
