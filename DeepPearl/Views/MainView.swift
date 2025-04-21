@@ -166,13 +166,13 @@ struct MainView: View {
                         Image(systemName: "plus")
                             .font(.system(size: 30, weight: .bold))
                             .foregroundStyle(.white)
-                            .padding(20)
+                            .padding(22)
                             .background(.ultraThinMaterial)
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
-                    .padding(.bottom, 60)
-                    .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 4)
+                    .padding(.bottom, 50)
+                    .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
                     Spacer()
                 }
             } // add note modal button
