@@ -11,6 +11,10 @@ import SwiftData
 struct AddModalView: View {
     @Query var notes: [ThankNote] // 여기서는 읽어올 때(오늘 기록이 이미 있는지 확인할 때) 사용
     // @Query로 접근 -> 값 수정/삭제 -> modelContext에 변경 내용 저장
+    @Environment(\.modelContext) private var modelContext // 영구 데이터 모델의 전체 라이프사이클을 관리하는 역할, 모델에 대한 변경사항을 추적하고 유지한다.
+    // 여기서는 저장할 때 사용
+    // autosaveEnabled. -> 암묵적 쓰기 -> 데이터가 삽입되거나 등록된 모델을 변경하면 ModelContext에서 save() 호출
+    // @Environment는 SwiftUI 뷰 내부에서만 가능, 함수나 구조체 내부에서는 직접 넘겨야 됨.
     
     @Binding var isPresented: Bool // add sheet presented 여부
     @Binding var text: String // 유저가 TextEditor에 작성하는 텍스트
@@ -18,10 +22,7 @@ struct AddModalView: View {
     @State private var isShowingAlreadyExistsAlert = false // 이미 작성한 감사 기록이 있는 날짜에 또 작성을 시도할 경우 띄울 경고창 - 덮어 쓰기 가능
     @FocusState private var isFocused: Bool
     
-    @Environment(\.modelContext) private var modelContext // 영구 데이터 모델의 전체 라이프사이클을 관리하는 역할, 모델에 대한 변경사항을 추적하고 유지한다.
-    // 여기서는 저장할 때 사용
-    // autosaveEnabled. -> 암묵적 쓰기 -> 데이터가 삽입되거나 등록된 모델을 변경하면 ModelContext에서 save() 호출
-    // @Environment는 SwiftUI 뷰 내부에서만 가능, 함수나 구조체 내부에서는 직접 넘겨야 됨.
+    
     
     var body: some View {
         NavigationStack {
@@ -41,8 +42,8 @@ struct AddModalView: View {
                 //.background(Color.white.opacity(0.1))
                 .background(.thinMaterial)
                 // 알아서 TextEditor focused
-                .onAppear{
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now()) {
                         isFocused = true
                     }
                 }

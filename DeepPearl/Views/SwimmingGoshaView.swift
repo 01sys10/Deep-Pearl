@@ -10,7 +10,6 @@ import SwiftUI
 struct SwimmingGoshaView: View {
     var fishLevel: Int
     @State private var frameIndex = 0
-    // private let frames = ["gosha_swimming_1", "gosha_swimming_2"]
     private let timer = Timer.publish(every: 0.6, on: .main, in: .common).autoconnect()
 
     var body: some View {

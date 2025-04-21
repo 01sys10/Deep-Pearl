@@ -5,7 +5,7 @@
 //  Created by soyeonsoo on 4/16/25.
 //
 
-// 뷰모델로 바꿀까 흠흠 ObservableObject로
+// 뷰모델로 바꿀까 흠흠 ObservableObject로 no~
 import SwiftData
 import Foundation
 

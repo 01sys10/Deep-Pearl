@@ -27,6 +27,7 @@ struct MainView: View {
     @State private var pearlYPositions: [PersistentIdentifier: CGFloat] = [:]
     @State private var pearlXPositions: [PersistentIdentifier: CGFloat] = [:]
     
+    // fish level 단계 User Default로 저장
     @AppStorage("fishLevel") private var fishLevel: Int = 1
     
     private let maxFishLevel = 3
@@ -39,9 +40,7 @@ struct MainView: View {
                 .resizable()
             //.scaledToFill()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
-            //.edgesIgnoringSafeArea(.all)
-            
+                .ignoresSafeArea()          
             
             LightRayView()
             
@@ -181,15 +180,17 @@ struct MainView: View {
         .onTapGesture {
             currentTime = Date()
         }
-        .onAppear {
-            fishLevel = 1
-        }
         
-        // MARK: for text
+        
+        // MARK: for test
         
         //        .onAppear {
         //            DataManager.deleteAllNotes(in: modelContext)
         //        }
+        
+        .onAppear {
+            fishLevel = 1
+        }
         
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
@@ -206,13 +207,24 @@ struct MainView: View {
         let pearlSize: CGFloat
         let onTap: () -> Void
         
-        @State private var y: CGFloat = 700
+        @State private var y: CGFloat
+        
+        init(note: ThankNote, x: CGFloat, isFloatingUp: Bool, pearlSize: CGFloat, onTap: @escaping () -> Void) {
+            self.note = note
+            self.x = x
+            self.isFloatingUp = isFloatingUp
+            self.pearlSize = pearlSize
+            self.onTap = onTap
+            _y = State(initialValue: isFloatingUp ? 120 : 700)
+        }
         
         var body: some View {
             Image(isFloatingUp ? "pearl_yellow" : "pearl_pink")
                 .resizable()
                 .interpolation(.none)
                 .frame(width: pearlSize, height: pearlSize)
+                .shadow(color: .white, radius: 16)
+
                 .position(x: x, y: y)
                 .onTapGesture {
                     if isFloatingUp {
