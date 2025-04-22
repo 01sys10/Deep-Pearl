@@ -30,25 +30,38 @@ struct AddModalView: View {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
                 // MARK: TextEditor
-                VStack {
-                    TextEditor(text: $text)
-                        .padding()
-                        .scrollContentBackground(.hidden)
-                        .cornerRadius(14)
-                        .padding()
-                        .foregroundColor(.primary)
-                        .focused($isFocused)
-                }
-                //.background(Color.white.opacity(0.1))
-                .background(.thinMaterial)
-                // 알아서 TextEditor focused
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now()) {
-                        isFocused = true
-                    }
+                if !isFocused && text.isEmpty {
+                    Text("오늘 감사했던 일을 35자 이내로 적어보세요.")
+                        .foregroundColor(.gray)
+                        .padding(.horizontal, 22)
+                        .padding(.top, 18)
                 }
                 
+                TextEditor(text: $text)
+                    .padding()
+                    .scrollContentBackground(.hidden)
+                    .cornerRadius(14)
+                    .padding()
+                    .foregroundColor(.primary)
+                    .focused($isFocused)
+                    .onChange(of: text) { _, newValue in
+                        if newValue.count > 35 {
+                            text = String(newValue.prefix(35))
+                        }
+                    }
+                // 알아서 TextEditor focused
+                // .onAppear { DispatchQueue.main.asyncAfter(deadline: .now()+0.35) {
+                //             isFocused = true }
+                //           }
             }
+            .overlay(
+                Text("\(text.count)/35")
+                    .font(.caption2)
+                    .foregroundColor(.gray)
+                    .padding(.trailing, 30)
+                    .padding(.bottom, 10),
+                alignment: .bottomTrailing
+            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -72,7 +85,7 @@ struct AddModalView: View {
                 
                 // MARK: save button
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
+                    Button("완료") {
                         let alreadyExists = notes.contains {
                             Calendar.current.isDate($0.timestamp, inSameDayAs: .now)
                         }

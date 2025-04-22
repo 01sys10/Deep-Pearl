@@ -21,6 +21,7 @@ struct MainView: View {
     
     
     @State private var animate = false
+    
     @State private var selectedNote: ThankNote? = nil
     // 유저가 탭한 진주에 해당하는 감사 기록을 담는 변수
     // 기본값 nil, 유저가 진주를 탭하면 값이 채워짐
@@ -71,9 +72,9 @@ struct MainView: View {
             // alert로 상기 내용 보여주기
             .alert(isPresented: $showRecollection) {
                 Alert(
-                    title: Text("Thank-note from a week ago"),
+                    title: Text("🙏일주일 전 감사 기록🙏"),
                     message: Text(selectedNote?.note ?? ""),
-                    dismissButton: .default(Text("Thanks!")) {
+                    dismissButton: .default(Text("감사하다!")) {
                         if let selectedNote = selectedNote {
                             selectedNote.isRecalled = true
                             fishLevel = min(fishLevel + 1, maxFishLevel) // 감사 기록 상기하면 물고기 레벨업
@@ -118,6 +119,7 @@ struct MainView: View {
                 HStack{
                     Spacer()
                     SwimmingGoshaView(fishLevel: fishLevel)
+
                     Spacer()
                 }
                 Spacer()
@@ -149,10 +151,11 @@ struct MainView: View {
             
             if isShowingHistory {
                 HistoryView(isShowing: $isShowingHistory)
-                    .transition(.move(edge: .trailing))
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
                     .zIndex(1)
                 //.environmentObject(mockViewModel)
             }
+            
             
             
             // MARK: Button(MainView -> AddModalView)
@@ -191,6 +194,7 @@ struct MainView: View {
         .onAppear {
             fishLevel = 1
         }
+        
         
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
