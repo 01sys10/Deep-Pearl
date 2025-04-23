@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct LightRayView: View {
-    @State private var animate = false
+    @Binding var animate: Bool
     // 메인뷰의 전환 방식이 .sheet든 .transition이든 뷰가 실제로 제거되고 다시 그려지지 않는 한 @State는 유지된다.
     // @State 변수는 뷰가 완전히 사라졌다가 다시 생길 때만 초기화됨.
     // 애니메이션을 강제로 트리거하려면 @State를 리셋하거나 ObservableObject로 분리해서 전역에서 제어.
 
+    // TODO: [히스토리뷰에서 수정하고 다시 메인뷰로 나오면 || 상기 후 진화하면] 애니메이션 멈춤 이슈 해결
     
     var body: some View {
 //        TimelineView(.animation){ timeline in
@@ -53,10 +54,18 @@ struct LightRayView: View {
                         value: animate
                     )
             }
+//            .onChange(of: isShowingHistory) { isNowShowing in
+//                if !isNowShowing {
+//                    animate = false
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+//                        animate = true
+//                    }
+//                }
+//            }
         //}
     }
 }
 
-#Preview {
-    LightRayView()
-}
+//#Preview {
+//    LightRayView(animate: $animate)
+//}

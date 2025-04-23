@@ -10,18 +10,18 @@ import SwiftUI
 
 struct HistoryView: View {
     @Query var notes: [ThankNote]
-    @Binding var isShowing: Bool
-    @Environment(\.modelContext) private var context
-    
-    @State private var selectedDate = Date()
-    @State private var selectedNote: ThankNote? = nil
-    @State private var editingText: String = ""
-    
-    @State private var hasAppeared = false
-    @State private var isEditing = false
+    @Environment(\.modelContext) private var context // 모델 삽입, 수정, 삭제할 때 사용
+
+    @Binding var isShowing: Bool // MainView에서 HistoryView 표시 여부 제어하는 바인딩 값. for xmark
+    @State private var selectedDate = Date() // 유저가 캘린더에서 선택한 날짜, 선택된 날짜에 해당하는 ThankNote를 필터링해 표시할 때 사용
+    @State private var selectedNote: ThankNote? = nil // 유저가 선택한 날짜에 대응하는 Note 객체, 선택된 진주의 내용을 하단 두루마리 뷰에 표시하거나 편집할 때 사용
+    @State private var editingText: String = "" // 편집 중인 텍스트를 임시로 저장하는 변수, 수정 완료 후 selectedNote.note에 반영
+    @State private var showDeleteConfirmation = false
+    @State private var hasAppeared = false // HistoryView의 초기 등장 애니메이션을 위한 플래그. for calendar opacity animation
+    @State private var isEditing = false // 유저가 수정 버튼 눌렀는지 여부, true일 경우 텍스트에디터 활성화, 체크 버튼 나타남.
     @FocusState private var isTextEditorFocused: Bool
     
-    @State private var currentMonthOffset = 0
+    @State private var currentMonthOffset = 0 // 현재 달력을 몇 개월 앞뒤로 이동했는지를 나타내는 오프셋
     private let calendar = Calendar.current
     
     var body: some View {
@@ -52,7 +52,7 @@ struct HistoryView: View {
                     }
                     .padding(.bottom, 30)
                     
-                    // 월/년 및 이동 버튼
+                    // TODO: 월/년 및 이동 버튼 -> 별도 뷰로 분리
                     HStack {
                         Button {
                             currentMonthOffset -= 1
@@ -60,17 +60,13 @@ struct HistoryView: View {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(.black.opacity(0.5))
-                            
                         }
-                        
                         Spacer()
-                        
                         Text(monthYearText(for: currentDate))
                             .font(.title3)
                             .fontWeight(.medium)
                         
                         Spacer()
-                        
                         Button {
                             currentMonthOffset += 1
                         } label: {
@@ -89,7 +85,7 @@ struct HistoryView: View {
                         selectedDate: $selectedDate,
                         selectedNote: $selectedNote
                     )
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 30)
                     
                     // 두루마리 노트 영역
                     if let selectedNote = selectedNote {
@@ -103,6 +99,7 @@ struct HistoryView: View {
                             
                             VStack {
                                 if isEditing {
+                                    // TODO: TextField로 수정 (axis로 multiline 구현)
                                     TextEditor(text: $editingText)
                                         .onAppear {
                                             DispatchQueue.main.asyncAfter(
@@ -113,21 +110,7 @@ struct HistoryView: View {
                                         }
                                         .font(.system(size: 16))
                                         .focused($isTextEditorFocused)
-                                        .toolbar {
-                                            ToolbarItemGroup(
-                                                placement: .keyboard
-                                            ) {
-                                                Spacer()
-                                                Button(action: {
-                                                    isTextEditorFocused = false
-                                                }) {
-                                                    Image(
-                                                        systemName:
-                                                            "keyboard.chevron.compact.down.fill"
-                                                    ).foregroundColor(.indigo)
-                                                }
-                                            }
-                                        }
+                                        
                                         .padding(.horizontal, 10)
                                         .padding(.top, 70)
                                         .onAppear {
@@ -153,10 +136,14 @@ struct HistoryView: View {
                                             .font(.system(size: 24, weight: .bold))
                                             .foregroundColor(.black.opacity(0.5))
                                             .padding(.top, 40)
-                                        //.border(.red, width: 4)
+                                            //.border(.red, width: 4)
                                     }
                                 } else {
                                     HStack(spacing: 20) {
+                                        Text(FullDateText(for: selectedNote.timestamp))
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .padding(.leading, 20)
                                         Spacer()
                                         Button {
                                             isEditing = true
@@ -167,27 +154,38 @@ struct HistoryView: View {
                                         }
                                         
                                         Button(role: .destructive) {
-                                            context.delete(selectedNote)
-                                            try? context.save()
-                                            self.selectedNote = nil
+                                            showDeleteConfirmation = true
                                         } label: {
                                             Image(systemName: "trash")
                                                 .font(.system(size: 16, weight: .bold))
                                                 .foregroundColor(.black.opacity(0.5))
                                         }
-                                        
+                                        .alert("정말 삭제하겠어요?", isPresented: $showDeleteConfirmation){
+                                            Button("취소", role: .cancel){ }
+                                            Button("삭제", role: .destructive){
+                                                context.delete(selectedNote)
+                                                try? context.save()
+                                                self.selectedNote = nil
+                                                // if let noteToDelete = selectedNote {
+                                                // DataManager.deleteNote(noteToDelete, in: context)
+                                                // selectedNote = nil // ???: 왜 오류일까?
+                                            }
+                                            
+                                        } message: {
+                                            Text("이 감사 기록은 복구할 수 없어요.")
+                                        }
                                     }
-                                    .padding([.trailing], 20)
+                                    .padding(.trailing, 20)
                                     //.border(.red, width: 4)
                                     // MARK: text
-                                    Text(selectedNote.note)
-                                        .multilineTextAlignment(.center)
-                                        .frame(width: 280, height: 90)
-                                        .lineSpacing(6)
-                                        .padding(12)
-                                        .padding(.bottom, 20)
+                                Text(selectedNote.note)
+                                    .multilineTextAlignment(.center)
+                                    .frame(width: 280, height: 90)
+                                    .lineSpacing(6)
+                                    .padding(12)
+                                    .padding(.bottom, 24)
                                     //.border(.red, width: 4)
-                                        .font(.system(size: 16))
+                                    .font(.system(size: 16))
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -203,7 +201,21 @@ struct HistoryView: View {
             .padding(.bottom, isEditing ? 350 : 0)
             .animation(.easeInOut, value: isEditing)
         }
-        
+        .toolbar {
+            ToolbarItemGroup(
+                placement: .keyboard
+            ) {
+                Spacer()
+                Button(action: {
+                    isTextEditorFocused = false
+                }) {
+                    Image(
+                        systemName:
+                            "keyboard.chevron.compact.down.fill"
+                    ).foregroundColor(.indigo)
+                }
+            }
+        }
         .opacity(hasAppeared ? 1 : 0)
         .animation(.easeInOut(duration: 0.5), value: hasAppeared)  // HistoryView가 슬라이드 되기 직전에 캘린더 셀들이 먼저 계산되어 즉시 보이는 느낌 없애기 위해.
         
@@ -227,6 +239,12 @@ struct HistoryView: View {
         formatter.dateFormat = "yyyy LLLL"
         return formatter.string(from: date)
     }
+    
+    func FullDateText(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM월 dd일 HH시 mm분"
+        return formatter.string(from: date)
+    }
 }
 
 // MARK: Calendar struct
@@ -243,7 +261,7 @@ struct CalendarGridView: View {
         // LazyVGrid 안의 셀은 계산이 빠르니까 먼저 보이고
         // HistoryView 전체의 .transition(.move)는 그 다음 적용돼서 캘린더 셀만 먼저 띡 뜨게 된다.
         
-        // Lazy는 계산 타이밍의 최적화지, 화면 표시 타이밍을 기다리는 게 아님.
+        // Lazy는 계산 타이밍의 최적화(렌더링 비용 감소)지, 화면 표시 타이밍을 기다리는 게 아님.
         
         LazyVGrid(columns: columns, spacing: 10) {
             ForEach(weekdayHeaders, id: \.self) { day in

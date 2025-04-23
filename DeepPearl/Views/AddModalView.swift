@@ -9,8 +9,9 @@ import SwiftUI
 import SwiftData
 
 struct AddModalView: View {
-    @Query var notes: [ThankNote] // 여기서는 읽어올 때(오늘 기록이 이미 있는지 확인할 때) 사용
-    // @Query로 접근 -> 값 수정/삭제 -> modelContext에 변경 내용 저장
+    @Query var notes: [ThankNote] // ThankNote 모델 객체 배열을 자동으로 조회해서 가져온다.
+    // 뷰가 다시 그려질 때마다 최신 데이터를 자동으로 반영한다.
+    // 직접 수정은 안 되고 조회(read) 용도로만 사용한다.
     @Environment(\.modelContext) private var modelContext // 영구 데이터 모델의 전체 라이프사이클을 관리하는 역할, 모델에 대한 변경사항을 추적하고 유지한다.
     // 여기서는 저장할 때 사용
     // autosaveEnabled. -> 암묵적 쓰기 -> 데이터가 삽입되거나 등록된 모델을 변경하면 ModelContext에서 save() 호출
@@ -22,7 +23,7 @@ struct AddModalView: View {
     @State private var isShowingAlreadyExistsAlert = false // 이미 작성한 감사 기록이 있는 날짜에 또 작성을 시도할 경우 띄울 경고창 - 덮어 쓰기 가능
     @FocusState private var isFocused: Bool
     
-    
+    // TODO: 적은 글자수에 맞는 텍스트 필드로 수정
     
     var body: some View {
         NavigationStack {
@@ -38,18 +39,20 @@ struct AddModalView: View {
                 }
                 
                 TextEditor(text: $text)
-                    .padding()
+                    .font(.system(size: 18))
+                    .lineSpacing(6)
+                    .padding(16)
                     .scrollContentBackground(.hidden)
                     .cornerRadius(14)
                     .padding()
                     .foregroundColor(.primary)
                     .focused($isFocused)
-                    .onChange(of: text) { _, newValue in
+                    .onChange(of: text) { _, newValue in // text값이 변할 때마다 클로저 실행
                         if newValue.count > 35 {
-                            text = String(newValue.prefix(35))
+                            text = String(newValue.prefix(35)) // prefix로 자르고 나면 Substring으로 나와서 String으로 형변환 필요
                         }
                     }
-                // 알아서 TextEditor focused
+                // 알아서 TextEditor focused - 하지 말자
                 // .onAppear { DispatchQueue.main.asyncAfter(deadline: .now()+0.35) {
                 //             isFocused = true }
                 //           }
@@ -120,7 +123,8 @@ struct AddModalView: View {
                 
             }
         }
-        .presentationDetents([.medium])
+        //.presentationDetents([.medium])
+        .presentationDetents([.height(220)]) // sheet 높이 설정
         .presentationContentInteraction(.scrolls)
         
         .alert("기록 중이던 내용을 모두 삭제하시겠어요?", isPresented: $isShowingDiscardAlert) {

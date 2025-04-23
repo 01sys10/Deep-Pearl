@@ -15,6 +15,8 @@ struct MainView: View {
     
     @State private var isShowingAddModal = false
     @State private var isShowingHistory = false
+    @State private var isShowingTutorial = false
+
     @State private var showRecollection = false
     @State private var thankNote = ""
     @State private var currentTime = Date()
@@ -25,8 +27,9 @@ struct MainView: View {
     @State private var selectedNote: ThankNote? = nil
     // 유저가 탭한 진주에 해당하는 감사 기록을 담는 변수
     // 기본값 nil, 유저가 진주를 탭하면 값이 채워짐
-    @State private var pearlYPositions: [PersistentIdentifier: CGFloat] = [:]
-    @State private var pearlXPositions: [PersistentIdentifier: CGFloat] = [:]
+    // @State private var pearlYPositions: [PersistentIdentifier: CGFloat] = [:]
+    @State private var pearlXPositions: [PersistentIdentifier: CGFloat] = [:]// 진주의 위치 기억하기 위한 변수. 한 번 위치를 저장해서 다음 렌더링 때도 같은 위치를 사용하려고.
+    // 각 ThankNote 객체는 SwiftData에서 고유한 persistentModelID(PersistenetIdentifier)를 가지고 있기 때문에 이 ID를 통해 진주 하나 하나를 구분할 수 있다.
     
     // fish level 단계 User Default로 저장
     @AppStorage("fishLevel") private var fishLevel: Int = 1
@@ -43,11 +46,12 @@ struct MainView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()          
             
-            LightRayView()
+            LightRayView(animate: $animate)
             
             // MARK: pearl
             ForEach(notes.filter { !$0.isRecalled }) { note in
                 let id = note.persistentModelID
+                // 일주일 뒤 상승
                 // let isFloatingUp = note.timestamp < Calendar.current.date(byAdding: .day, value: -7, to: Date())!
                 // 테스트용(10초 뒤 상승)
                 let isFloatingUp = currentTime.timeIntervalSince(note.timestamp) >= 10
@@ -69,6 +73,7 @@ struct MainView: View {
                 }
             }
             
+            // TODO: alert말고 오버레이로 수정
             // alert로 상기 내용 보여주기
             .alert(isPresented: $showRecollection) {
                 Alert(
@@ -91,7 +96,7 @@ struct MainView: View {
                 HStack(spacing: 0) {
                     Image("coral_yellow")
                         .resizable()
-                        .interpolation(.none)
+                        .interpolation(.none) // 보간법. 주어진 픽셀을 가지고 더 작은 픽셀 단위로 추정하고 만든다.
                     //.scaledToFit()
                         .frame(width: 200, height: 180)
                     
@@ -103,15 +108,18 @@ struct MainView: View {
                 }
                 .offset(x: animate ? -10 : 10)
                 .animation(
-                    Animation.easeInOut(duration: 3).repeatForever(autoreverses: true),
+                    Animation.easeInOut(duration: 3).repeatForever(autoreverses: true), // animate가 true로 한 번만 바뀌더라도 Swiftui가 x축 오프셋이 -10 -> 10 -> -10 -> 10 ... 이런 식으로 계속 오가도록 애니메이션 반복
                     value: animate
                 )
                 .onAppear {
-                    animate = true
+                    animate = false
                 }
-                
+                // SwiftUI의 뷰는 상태가 바뀌면 해당 뷰 트리 자체가 다시 생성된다
+                // 모델 데이터를 변경하고 저장하면, Swiftui는 내부적으로 notes에 변화가 생겼다고 판단, 관련된 뷰 계층을 다시 생성
+                // "어? 데이터 바뀌었네? 그럼 이 뷰도 다시 만들어야지"하면서 .onAppear 이전에 설정된 애니메이션 상태도 날려버리는 것
+                // 여기서는 HistoryView를 다녀와도 onAppear가 실행되지 않아서
+                // HistoryView isShowing값이 변할 때 다시 트리거를 주는 걸로 해결(아래 onChange)
             }
-            
             
             // MARK: Swimming fish
             VStack{
@@ -119,33 +127,47 @@ struct MainView: View {
                 HStack{
                     Spacer()
                     SwimmingGoshaView(fishLevel: fishLevel)
-
                     Spacer()
                 }
                 Spacer()
             } // Swimming Gosha
             
             
-            // MARK: Button(MainView -> HistoryView)
+            // MARK: Buttons(MainView -> HistoryView & MainView -> TutorialView)
             VStack{
-                Button{
-                    withAnimation{
-                        isShowingHistory = true
+                HStack{
+                    Button{
+                        withAnimation{
+                            isShowingTutorial = true
+                        }
+                    } label:{
+                        Image(systemName: "info.circle.fill")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(3)
                     }
-                } label:{
-                    Image(systemName: "archivebox.fill")
-                    //.frame(width: 40, height: 47)
-                        .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(3)
-                    //.background(.ultraThinMaterial)
-                    //.clipShape(Circle())
+                    .tint(.white)
+                    .padding(.top, 45)
+                    .padding(.leading, 30)
+                    .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 4)
+                    
+                    Spacer()
+                    
+                    Button{
+                        withAnimation{
+                            isShowingHistory = true
+                        }
+                    } label:{
+                        Image(systemName: "archivebox.fill")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(3)
+                    }
+                    .tint(.white)
+                    .padding(.top, 45)
+                    .padding(.trailing, 30)
+                    .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 4)
                 }
-                //.buttonStyle(.bordered)
-                .tint(.white)
-                .padding(.top, 45)
-                .padding(.trailing, 30)
-                .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 4)
                 Spacer()
             }
             
@@ -156,6 +178,7 @@ struct MainView: View {
                 //.environmentObject(mockViewModel)
             }
             
+            // TODO: isShowingTutorial 구현
             
             
             // MARK: Button(MainView -> AddModalView)
@@ -190,9 +213,13 @@ struct MainView: View {
         //        .onAppear {
         //            DataManager.deleteAllNotes(in: modelContext)
         //        }
-        
         .onAppear {
             fishLevel = 1
+            
+            animate = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                animate = true
+            }
         }
         
         
@@ -200,7 +227,15 @@ struct MainView: View {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
         }
         .animation(.easeInOut, value: isShowingHistory)
-        
+        .onChange(of: isShowingHistory) { _, newValue in
+            if !newValue {
+                // 히스토리뷰 닫히면 coral 애니메이션 다시 시작
+                animate = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    animate = true
+                }
+            }
+        }
     }
     
     
