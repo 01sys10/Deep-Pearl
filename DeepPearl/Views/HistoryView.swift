@@ -52,31 +52,8 @@ struct HistoryView: View {
                     }
                     .padding(.bottom, 30)
                     
-                    // TODO: 월/년 및 이동 버튼 -> 별도 뷰로 분리
-                    HStack {
-                        Button {
-                            currentMonthOffset -= 1
-                        } label: {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.black.opacity(0.5))
-                        }
-                        Spacer()
-                        Text(monthYearText(for: currentDate))
-                            .font(.title3)
-                            .fontWeight(.medium)
-                        
-                        Spacer()
-                        Button {
-                            currentMonthOffset += 1
-                        } label: {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.black.opacity(0.5))
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom, 60)
+                    // TODO: 월/년 및 이동 버튼 -> 별도 뷰로 분리 ok~
+                    MonthNavigationView(currentMonthOffset: $currentMonthOffset, currentDate: currentDate, monthYearText: monthYearText)
                     
                     // 캘린더
                     CalendarGridView(
@@ -96,11 +73,26 @@ struct HistoryView: View {
                                 .scaledToFit()
                                 .frame(maxWidth: 380)
                                 .padding(.top, 16)
-                            
+                                .offset(y: isEditing ? -160 : 0) // move up when editing
+
                             VStack {
                                 if isEditing {
                                     // TODO: TextField로 수정 (axis로 multiline 구현)
-                                    TextEditor(text: $editingText)
+                                    TextField("", text: $editingText, axis: .vertical)
+                                        .lineLimit(2)
+                                        .font(.system(size: 16))
+                                        .focused($isTextEditorFocused)
+                                        .multilineTextAlignment(.center)
+                                        .frame(width: 280)
+                                        .padding(.top, 70)
+                                        .onAppear {
+                                            editingText = selectedNote.note
+                                        }
+                                        .onChange(of: editingText) { _, newValue in
+                                            if newValue.count > 35 {
+                                                editingText = String(newValue.prefix(35))
+                                            }
+                                        }
                                         .onAppear {
                                             DispatchQueue.main.asyncAfter(
                                                 deadline: .now()
@@ -108,25 +100,34 @@ struct HistoryView: View {
                                                 isTextEditorFocused = true
                                             }
                                         }
-                                        .font(.system(size: 16))
-                                        .focused($isTextEditorFocused)
-                                        
-                                        .padding(.horizontal, 10)
-                                        .padding(.top, 70)
-                                        .onAppear {
-                                            editingText = selectedNote.note
-                                        }
-                                        .frame(width: 280, height: 130)
-                                    //.background(.thinMaterial)
-                                        .scrollContentBackground(.hidden)
-                                        .lineSpacing(6)
-                                    //.border(.red, width: 4)
-                                        .onChange(of: editingText) { _, newValue in
-                                                if newValue.count > 35 {
-                                                    editingText = String(newValue.prefix(30))
-                                                }
-                                            }
-                                    
+//
+//                                    TextEditor(text: $editingText)
+//                                        .onAppear {
+//                                            DispatchQueue.main.asyncAfter(
+//                                                deadline: .now()
+//                                            ) {
+//                                                isTextEditorFocused = true
+//                                            }
+//                                        }
+//                                        .font(.system(size: 16))
+//                                        .focused($isTextEditorFocused)
+//
+//                                        .padding(.horizontal, 10)
+//                                        .padding(.top, 70)
+//                                        .onAppear {
+//                                            editingText = selectedNote.note
+//                                        }
+//                                        .frame(width: 280, height: 130)
+//                                    //.background(.thinMaterial)
+//                                        .scrollContentBackground(.hidden)
+//                                        .lineSpacing(6)
+//                                    //.border(.red, width: 4)
+//                                        .onChange(of: editingText) { _, newValue in
+//                                                if newValue.count > 35 {
+//                                                    editingText = String(newValue.prefix(30))
+//                                                }
+//                                            }
+//
                                     Button {
                                         selectedNote.note = editingText
                                         try? context.save()
@@ -189,6 +190,7 @@ struct HistoryView: View {
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
+                            .offset(y: isEditing ? -160 : 0) // move up when editing
                         }
                         .padding(.top, 20)
                         .frame(maxWidth: .infinity)
@@ -198,24 +200,24 @@ struct HistoryView: View {
                 }
             }
             .padding(.top, 40)
-            .padding(.bottom, isEditing ? 350 : 0)
-            .animation(.easeInOut, value: isEditing)
+//            .padding(.bottom, isEditing ? 350 : 0)
+//            .animation(.easeInOut, value: isEditing)
         }
-        .toolbar {
-            ToolbarItemGroup(
-                placement: .keyboard
-            ) {
-                Spacer()
-                Button(action: {
-                    isTextEditorFocused = false
-                }) {
-                    Image(
-                        systemName:
-                            "keyboard.chevron.compact.down.fill"
-                    ).foregroundColor(.indigo)
-                }
-            }
-        }
+//        .toolbar {
+//            ToolbarItemGroup(
+//                placement: .keyboard
+//            ) {
+//                Spacer()
+//                Button(action: {
+//                    isTextEditorFocused = false
+//                }) {
+//                    Image(
+//                        systemName:
+//                            "keyboard.chevron.compact.down.fill"
+//                    ).foregroundColor(.indigo)
+//                }
+//            }
+//        }
         .opacity(hasAppeared ? 1 : 0)
         .animation(.easeInOut(duration: 0.5), value: hasAppeared)  // HistoryView가 슬라이드 되기 직전에 캘린더 셀들이 먼저 계산되어 즉시 보이는 느낌 없애기 위해.
         
@@ -357,3 +359,37 @@ struct CalendarGridView: View {
         return days
     }
 }
+
+struct MonthNavigationView: View {
+    @Binding var currentMonthOffset: Int
+    let currentDate: Date
+    let monthYearText: (Date) -> String
+    
+    var body: some View {
+        HStack {
+            Button {
+                currentMonthOffset -= 1
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.black.opacity(0.5))
+            }
+            Spacer()
+            Text(monthYearText(currentDate))
+                .font(.title3)
+                .fontWeight(.medium)
+            
+            Spacer()
+            Button {
+                currentMonthOffset += 1
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.black.opacity(0.5))
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom, 60)
+    }
+}
+

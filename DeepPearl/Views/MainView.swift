@@ -226,6 +226,9 @@ struct MainView: View {
         .sheet(isPresented: $isShowingAddModal) {
             AddModalView(isPresented: $isShowingAddModal, text: $thankNote)
         }
+        .fullScreenCover(isPresented: $isShowingTutorial) {
+            TutorialView(isPresented: $isShowingTutorial)
+        }
         .animation(.easeInOut, value: isShowingHistory)
         .onChange(of: isShowingHistory) { _, newValue in
             if !newValue {
