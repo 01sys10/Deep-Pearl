@@ -77,9 +77,9 @@ struct MainView: View {
             // alert로 상기 내용 보여주기
             .alert(isPresented: $showRecollection) {
                 Alert(
-                    title: Text("🙏일주일 전 감사 기록🙏"),
+                    title: Text("일주일 전 감사 기록"),
                     message: Text(selectedNote?.note ?? ""),
-                    dismissButton: .default(Text("감사하다!")) {
+                    dismissButton: .default(Text("🙏")) {
                         if let selectedNote = selectedNote {
                             selectedNote.isRecalled = true
                             fishLevel = min(fishLevel + 1, maxFishLevel) // 감사 기록 상기하면 물고기 레벨업
